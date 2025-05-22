@@ -57,7 +57,6 @@ const CameraAnimator = ({
   focusOnSun, 
   shouldZoomOut, 
   setShouldZoomOut, 
-  focusPlanet,
   fixedPlanetPosition 
 }: { 
   focusOnSun: boolean, 
