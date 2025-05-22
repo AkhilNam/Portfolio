@@ -15,7 +15,6 @@ const ResumeSatellite = () => {
   const leftPanelRef = useRef<THREE.Mesh>(null);
   const rightPanelRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
-  const [panelTilt, setPanelTilt] = useState(0);
 
   useFrame(({ clock }) => {
     // Orbit around the Sun
@@ -29,11 +28,6 @@ const ResumeSatellite = () => {
     if (satelliteRef.current) {
       satelliteRef.current.rotation.y += 0.01;
     }
-    // Subtle solar panel tilt
-    const tilt = Math.sin(clock.getElapsedTime() * 1.2) * 0.18;
-    setPanelTilt(tilt);
-    if (leftPanelRef.current) leftPanelRef.current.rotation.z = tilt;
-    if (rightPanelRef.current) rightPanelRef.current.rotation.z = -tilt;
   });
 
   return (

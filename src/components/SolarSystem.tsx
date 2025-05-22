@@ -4,9 +4,8 @@ import {
   Stars,
   CameraShake,
   Sparkles,
-  Preload
 } from '@react-three/drei';
-import { EffectComposer, Bloom, LensFlare } from '@react-three/postprocessing';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { Suspense, useRef, useState } from 'react';
 import Sun from './Sun';
 import Planet from './Planet';
@@ -35,7 +34,6 @@ interface OrbitingPlanetProps {
 // Helper component for orbiting planets
 function OrbitingPlanet({ radius, speed, phase, yOffset = 0, isFocused, ...props }: OrbitingPlanetProps & { isFocused?: boolean }) {
   const group = useRef<THREE.Group>(null);
-  const [currentPosition, setCurrentPosition] = useState<[number, number, number]>([0, 0, 0]);
   
   useFrame(({ clock }) => {
     if (!isFocused && group.current) {
@@ -45,7 +43,6 @@ function OrbitingPlanet({ radius, speed, phase, yOffset = 0, isFocused, ...props
       group.current.position.x = x;
       group.current.position.z = z;
       group.current.position.y = yOffset;
-      setCurrentPosition([x, yOffset, z]);
     }
   });
 
@@ -228,7 +225,6 @@ const SolarSystem = () => {
   const [focusOnSun, setFocusOnSun] = useState(false);
   const [focusPlanet, setFocusPlanet] = useState<null | { position: [number, number, number], data: any, color: string }>(null);
   const [shouldZoomOut, setShouldZoomOut] = useState(false);
-  const [showProjectModal, setShowProjectModal] = useState<null | { data: any }>(null);
   const [fixedPlanetPosition, setFixedPlanetPosition] = useState<[number, number, number] | null>(null);
 
   // Calculate planet positions

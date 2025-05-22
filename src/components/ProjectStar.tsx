@@ -25,7 +25,7 @@ const ProjectStar = ({ position, data, size, onClick }: ProjectStarProps) => {
   // Generate a random size on mount (between 0.12 and 0.18)
   const [randomSize] = useState(() => size ?? (0.12 + Math.random() * 0.06));
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (starRef.current) {
       starRef.current.rotation.y += delta * 0.1;
     }

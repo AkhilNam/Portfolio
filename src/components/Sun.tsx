@@ -13,9 +13,9 @@ const Sun = ({ onClick }: SunProps) => {
   const sunRef = useRef<THREE.Mesh>(null);
   const sunTexture = useTexture(SUN_TEXTURE_URL);
 
-  useFrame((state, delta) => {
+  useFrame((_state) => {
     if (sunRef.current) {
-      sunRef.current.rotation.y += delta * 0.1;
+      sunRef.current.rotation.y += 0.1 / 60;
     }
   });
 
