@@ -44,6 +44,7 @@ const Planet = ({ position, size, color, data, onClick }: PlanetProps) => {
   const planetRef = useRef<THREE.Mesh>(null);
   const atmosphereRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
+  const [hovered, setHovered] = useState(false);
   const [labelOpacity, setLabelOpacity] = useState(0);
 
   // Always call all useTexture hooks unconditionally
@@ -100,6 +101,8 @@ const Planet = ({ position, size, color, data, onClick }: PlanetProps) => {
         castShadow
         receiveShadow
         onClick={onClick}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
       >
         <sphereGeometry args={[size, 64, 64]} />
         {texturesLoaded && textures.map ? (
