@@ -1,8 +1,7 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Text } from '@react-three/drei';
+import { Text, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import Modal from './Modal';
 
 interface PlanetProps {
   position: [number, number, number];
@@ -14,62 +13,132 @@ interface PlanetProps {
     timeline?: string;
     highlights: string[];
   };
+  onClick?: () => void;
 }
 
-const Planet = ({ position, size, color, data }: PlanetProps) => {
-  const [showModal, setShowModal] = useState(false);
+interface PlanetTextures {
+  map?: THREE.Texture;
+  bumpMap?: THREE.Texture;
+  specularMap?: THREE.Texture;
+  cloudsMap?: THREE.Texture;
+}
+
+// NASA texture URLs
+const textureUrls = {
+  earth: {
+    map: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg',
+    bumpMap: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_normal_2048.jpg',
+    specularMap: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_specular_2048.jpg',
+    cloudsMap: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_clouds_1024.png'
+  },
+  mars: {
+    map: '/textures/2k_mars.jpg'
+  },
+  jupiter: {
+    map: '/textures/2k_jupiter.jpg'
+  }
+};
+
+const Planet = ({ position, size, color, data, onClick }: PlanetProps) => {
+  const [texturesLoaded, setTexturesLoaded] = useState(false);
   const planetRef = useRef<THREE.Mesh>(null);
+  const atmosphereRef = useRef<THREE.Mesh>(null);
+  const cloudsRef = useRef<THREE.Mesh>(null);
+
+  // Always call all useTexture hooks unconditionally
+  const earthTextures = useTexture(textureUrls.earth);
+  const marsTextures = useTexture(textureUrls.mars);
+  const jupiterTextures = useTexture(textureUrls.jupiter);
+
+  // Select the correct texture set
+  let textures: PlanetTextures = {};
+  if (data.title === "Living Dynamical Systems Lab") {
+    textures = earthTextures;
+  } else if (data.title === "Strategy Kiln") {
+    textures = marsTextures;
+  } else if (data.title === "Georgia Tech") {
+    textures = jupiterTextures;
+  }
+
+  // Convert hex color to THREE.Color for manipulation
+  const planetColor = new THREE.Color(color);
+  const atmosphereColor = new THREE.Color(color).multiplyScalar(1.2);
+
+  useEffect(() => {
+    if (textures.map) {
+      setTexturesLoaded(true);
+    }
+  }, [textures.map]);
 
   useFrame((state, delta) => {
     if (planetRef.current) {
       planetRef.current.rotation.y += delta * 0.2;
     }
+    // Rotate clouds faster than the planet
+    if (cloudsRef.current && data.title === "Living Dynamical Systems Lab" && texturesLoaded) {
+      cloudsRef.current.rotation.y += delta * 0.3;
+    }
+    // Subtle atmosphere pulsing
+    if (atmosphereRef.current) {
+      const time = state.clock.getElapsedTime();
+      const pulseIntensity = Math.sin(time * 1.5) * 0.1 + 0.3;
+      (atmosphereRef.current.material as THREE.MeshPhongMaterial).opacity = pulseIntensity;
+    }
   });
 
   return (
-    <>
-      <group position={position}>
-        <mesh
-          ref={planetRef}
-          onClick={() => setShowModal(true)}
-        >
-          <sphereGeometry args={[size, 32, 32]} />
+    <group position={position}>
+      {/* Main planet */}
+      <mesh
+        ref={planetRef}
+        castShadow
+        receiveShadow
+        onClick={onClick}
+      >
+        <sphereGeometry args={[size, 64, 64]} />
+        {texturesLoaded && textures.map ? (
+          <meshPhysicalMaterial
+            map={textures.map}
+            metalness={0.5}
+            roughness={0.2}
+            clearcoat={0.3}
+            clearcoatRoughness={0.1}
+            envMapIntensity={1}
+          />
+        ) : (
           <meshStandardMaterial
-            color={color}
-            emissive={color}
-            emissiveIntensity={0.2}
+            color={planetColor}
+            emissive={planetColor}
+            emissiveIntensity={0.4}
+            metalness={0.5}
+            roughness={0.2}
+          />
+        )}
+      </mesh>
+
+      {/* Clouds layer (only for Earth) */}
+      {data.title === "Living Dynamical Systems Lab" && texturesLoaded && textures.cloudsMap && (
+        <mesh ref={cloudsRef}>
+          <sphereGeometry args={[size * 1.01, 64, 64]} />
+          <meshPhongMaterial
+            map={textures.cloudsMap}
+            transparent
+            opacity={0.4}
+            depthWrite={false}
           />
         </mesh>
-
-        <Text
-          position={[0, size + 0.5, 0]}
-          fontSize={0.3}
-          color="white"
-          anchorX="center"
-          anchorY="middle"
-        >
-          {data.title}
-        </Text>
-      </group>
-
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)}>
-          <div className="text-white">
-            <h2 className="text-2xl font-bold mb-4">{data.title}</h2>
-            <p className="text-xl mb-2">{data.role}</p>
-            {data.timeline && (
-              <p className="text-gray-400 mb-4">{data.timeline}</p>
-            )}
-            <h3 className="text-lg font-semibold mb-2">Highlights:</h3>
-            <ul className="list-disc list-inside">
-              {data.highlights.map((highlight, index) => (
-                <li key={index} className="mb-1">{highlight}</li>
-              ))}
-            </ul>
-          </div>
-        </Modal>
       )}
-    </>
+
+      <Text
+        position={[0, size + 0.5, 0]}
+        fontSize={0.3}
+        color="white"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {data.title}
+      </Text>
+    </group>
   );
 };
 

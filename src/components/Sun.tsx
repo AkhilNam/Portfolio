@@ -1,10 +1,17 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Text } from '@react-three/drei';
+import { Text, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
-const Sun = () => {
+const SUN_TEXTURE_URL = '/textures/2k_sun.jpg';
+
+interface SunProps {
+  onClick?: () => void;
+}
+
+const Sun = ({ onClick }: SunProps) => {
   const sunRef = useRef<THREE.Mesh>(null);
+  const sunTexture = useTexture(SUN_TEXTURE_URL);
 
   useFrame((state, delta) => {
     if (sunRef.current) {
@@ -14,28 +21,18 @@ const Sun = () => {
 
   return (
     <group>
-      <mesh ref={sunRef}>
-        <sphereGeometry args={[3, 32, 32]} />
+      {/* Main sun sphere with texture only */}
+      <mesh ref={sunRef} castShadow receiveShadow onClick={onClick}>
+        <sphereGeometry args={[3, 64, 64]} />
         <meshStandardMaterial
-          color="#FFA500"
-          emissive="#FF4500"
-          emissiveIntensity={0.5}
+          map={sunTexture}
+          roughness={0.4}
+          metalness={0.8}
         />
       </mesh>
-      
-      {/* Glow effect */}
-      <mesh>
-        <sphereGeometry args={[3.2, 32, 32]} />
-        <meshBasicMaterial
-          color="#FFD700"
-          transparent
-          opacity={0.2}
-        />
-      </mesh>
-
       {/* Title Text */}
       <Text
-        position={[0, 4, 0]}
+        position={[0, 3.5, 0]}
         fontSize={0.5}
         color="white"
         anchorX="center"
@@ -43,18 +40,8 @@ const Sun = () => {
       >
         Akhil Nampally
       </Text>
-      
-      <Text
-        position={[0, 3, 0]}
-        fontSize={0.3}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-      >
-        Building AI, Robots, and Betting Tools with Purpose
-      </Text>
     </group>
   );
 };
 
-export default Sun; 
+export default Sun;

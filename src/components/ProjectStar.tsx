@@ -1,8 +1,7 @@
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Text } from '@react-three/drei';
+import { Text, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
-import Modal from './Modal';
 
 interface ProjectStarProps {
   position: [number, number, number];
@@ -12,72 +11,61 @@ interface ProjectStarProps {
     tech: string[];
     highlights: string[];
   };
+  size?: number;
+  onClick?: () => void;
 }
 
-const ProjectStar = ({ position, data }: ProjectStarProps) => {
-  const [showModal, setShowModal] = useState(false);
+const STAR_TEXTURE_URL = '/textures/star_4k.png';
+
+const ProjectStar = ({ position, data, size, onClick }: ProjectStarProps) => {
+  const [hovered, setHovered] = useState(false);
   const starRef = useRef<THREE.Mesh>(null);
+  const starTexture = useTexture(STAR_TEXTURE_URL);
+
+  // Generate a random size on mount (between 0.12 and 0.18)
+  const [randomSize] = useState(() => size ?? (0.12 + Math.random() * 0.06));
 
   useFrame((state, delta) => {
     if (starRef.current) {
-      starRef.current.rotation.y += delta * 0.3;
+      starRef.current.rotation.y += delta * 0.1;
     }
   });
 
   return (
-    <>
-      <group position={position}>
-        <mesh
-          ref={starRef}
-          onClick={() => setShowModal(true)}
-        >
-          <sphereGeometry args={[0.3, 16, 16]} />
-          <meshStandardMaterial
-            color="#FFD700"
-            emissive="#FFD700"
-            emissiveIntensity={0.5}
-          />
-        </mesh>
+    <group position={position}>
+      <mesh
+        ref={starRef}
+        onClick={onClick}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+        scale={hovered ? 1.2 : 1}
+      >
+        <sphereGeometry args={[randomSize, 32, 32]} />
+        <meshStandardMaterial
+          map={starTexture}
+          transparent
+          roughness={0.5}
+          metalness={0.7}
+          emissive="#ffffff"
+          emissiveIntensity={hovered ? 1.2 : 0.6}
+        />
+      </mesh>
 
+      {/* Floating label on hover */}
+      {hovered && (
         <Text
-          position={[0, 0.5, 0]}
-          fontSize={0.2}
+          position={[0, randomSize + 0.4, 0]}
+          fontSize={0.18}
           color="white"
           anchorX="center"
           anchorY="middle"
+          outlineColor="black"
+          outlineWidth={0.01}
         >
           {data.title}
         </Text>
-      </group>
-
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)}>
-          <div className="text-white">
-            <h2 className="text-2xl font-bold mb-4">{data.title}</h2>
-            <p className="text-xl mb-4">{data.description}</p>
-            
-            <h3 className="text-lg font-semibold mb-2">Technologies:</h3>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {data.tech.map((tech, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-star-gold bg-opacity-20 rounded-full text-sm"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-
-            <h3 className="text-lg font-semibold mb-2">Highlights:</h3>
-            <ul className="list-disc list-inside">
-              {data.highlights.map((highlight, index) => (
-                <li key={index} className="mb-1">{highlight}</li>
-              ))}
-            </ul>
-          </div>
-        </Modal>
       )}
-    </>
+    </group>
   );
 };
 
