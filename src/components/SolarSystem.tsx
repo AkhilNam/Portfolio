@@ -164,6 +164,7 @@ const SolarSystem = () => {
     [4, -5, -6],
     [-4, -5, 6],
     [0, -7, 0],
+    [8, 6, -7],
   ];
   const starData = [
     {
@@ -171,49 +172,56 @@ const SolarSystem = () => {
       description: "Real-time deepfake detection tool",
       tech: ["PyTorch", "Electron.js", "OpenCV"],
       highlights: ["85% accuracy", "live video monitoring UI"],
-      github: "https://github.com/yourusername/phantomshield"
+      github: "https://github.com/akhilnam/phantomshield"
     },
     {
       title: "EV-Arb Tool",
       description: "Sports betting prop evaluator",
       tech: ["Python", "FastAPI", "React"],
       highlights: ["Analyzes 10k+ props daily", "full-stack dashboard"],
-      github: "https://github.com/yourusername/ev-arb"
+      github: "https://github.com/akhilnam/ev-arb-tool"
     },
     {
       title: "Pet Mood Detection",
       description: "CV project for classifying dog breeds",
       tech: ["TensorFlow", "OpenCV"],
       highlights: ["MobileNetV2", "data augmentation", "85% accuracy"],
-      github: "https://github.com/yourusername/pet-mood"
+      github: "https://github.com/AkhilNam/DogBreedPrediction"
     },
     {
       title: "ROS Autonomous Robot",
       description: "Simulated SLAM + path planning bot",
       tech: ["Python", "ROS", "Gazebo"],
       highlights: ["Multi-goal routing", "TF debugging", "RViz visualization"],
-      github: "https://github.com/yourusername/ros-bot"
+      github: "https://github.com/AkhilNam/ros-autonomous-navigation"
     },
     {
       title: "BiasScope",
       description: "Real-time media bias detector",
       tech: ["Python", "React", "Sonar API"],
       highlights: ["AI-powered source comparison", "tone analysis"],
-      github: "https://github.com/yourusername/biasscope"
+      github: "https://github.com/akhilnam/biasscope"
     },
     {
       title: "ScholarGrind",
       description: "Study assistant with LLM + calendar sync",
       tech: ["Django", "PostgreSQL", "Google Calendar API", "OpenAI API"],
       highlights: ["Smart scheduling", "AI-powered study recommendations"],
-      github: "https://github.com/yourusername/scholargrind"
+      github: "https://github.com/svkapoor/scholargrind"
     },
     {
       title: "Sports Highlight Detector",
       description: "Video-based sports moment extractor",
       tech: ["Python", "OpenCV"],
       highlights: ["Motion pattern detection", "automatic clip extraction"],
-      github: "https://github.com/yourusername/sports-highlights"
+      github: "https://github.com/akhilnam/Sports-Highlight-Detector"
+    },
+    {
+      title: "College4U",
+      description: "College admissions and counseling platform",
+      tech: ["React", "Node.js", "MongoDB"],
+      highlights: ["Personalized recommendations", "Application tracking"],
+      github: "https://github.com/AkhilNam/College4U"
     }
   ];
 

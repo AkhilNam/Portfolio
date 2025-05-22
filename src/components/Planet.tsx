@@ -44,6 +44,8 @@ const Planet = ({ position, size, color, data, onClick }: PlanetProps) => {
   const planetRef = useRef<THREE.Mesh>(null);
   const atmosphereRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
+  const [hovered, setHovered] = useState(false);
+  const [labelOpacity, setLabelOpacity] = useState(0);
 
   // Always call all useTexture hooks unconditionally
   const earthTextures = useTexture(textureUrls.earth);
@@ -84,6 +86,12 @@ const Planet = ({ position, size, color, data, onClick }: PlanetProps) => {
       const pulseIntensity = Math.sin(time * 1.5) * 0.1 + 0.3;
       (atmosphereRef.current.material as THREE.MeshPhongMaterial).opacity = pulseIntensity;
     }
+    // Fade in label only if hovered
+    setLabelOpacity((prev) => {
+      if (hovered && prev < 1) return Math.min(1, prev + 0.08);
+      if (!hovered && prev > 0) return Math.max(0, prev - 0.08);
+      return prev;
+    });
   });
 
   return (
@@ -130,11 +138,16 @@ const Planet = ({ position, size, color, data, onClick }: PlanetProps) => {
       )}
 
       <Text
-        position={[0, size + 0.5, 0]}
-        fontSize={0.3}
-        color="white"
+        position={[0, size + 0.35, -0.18]}
+        fontSize={0.22}
+        color="#dddddd"
         anchorX="center"
-        anchorY="middle"
+        anchorY="bottom"
+        outlineColor="#3ad1e6"
+        outlineWidth={0.015}
+        fontWeight={400}
+        letterSpacing={0.03}
+        fillOpacity={labelOpacity}
       >
         {data.title}
       </Text>
