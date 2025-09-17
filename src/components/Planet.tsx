@@ -73,21 +73,63 @@ const Planet = ({ position, size, color, data, onClick }: PlanetProps) => {
 
   useFrame((state, delta) => {
     if (planetRef.current) {
-      planetRef.current.rotation.y += delta * 0.2;
+      // Smooth rotation with consistent timing
+      planetRef.current.rotation.y += delta * 0.3;
+
+      // Enhanced hover animation with easing
+      if (hovered) {
+        const time = state.clock.getElapsedTime();
+        const floatOffset = Math.sin(time * 2.5) * 0.08;
+        const scaleOffset = 1 + Math.sin(time * 3.5) * 0.03;
+
+        planetRef.current.position.y = THREE.MathUtils.lerp(
+          planetRef.current.position.y,
+          position[1] + floatOffset,
+          0.15
+        );
+        planetRef.current.scale.lerp(
+          new THREE.Vector3(scaleOffset, scaleOffset, scaleOffset),
+          0.15
+        );
+      } else {
+        planetRef.current.position.y = THREE.MathUtils.lerp(
+          planetRef.current.position.y,
+          position[1],
+          0.12
+        );
+        planetRef.current.scale.lerp(
+          new THREE.Vector3(1, 1, 1),
+          0.12
+        );
+      }
     }
+
     // Rotate clouds faster than the planet
     if (cloudsRef.current && data.title === "Living Dynamical Systems Lab" && texturesLoaded) {
       cloudsRef.current.rotation.y += delta * 0.3;
     }
-    // Subtle atmosphere pulsing
+
+    // Enhanced atmosphere pulsing
     if (atmosphereRef.current) {
       const time = state.clock.getElapsedTime();
-      const pulseIntensity = Math.sin(time * 1.5) * 0.1 + 0.3;
+      const pulseIntensity = Math.sin(time * 1.5) * 0.15 + (hovered ? 0.6 : 0.3);
       (atmosphereRef.current.material as THREE.MeshPhongMaterial).opacity = pulseIntensity;
+
+      // Color shift on hover
+      if (hovered) {
+        (atmosphereRef.current.material as THREE.MeshPhongMaterial).color.lerp(
+          new THREE.Color(planetColor).multiplyScalar(1.5), 0.1
+        );
+      } else {
+        (atmosphereRef.current.material as THREE.MeshPhongMaterial).color.lerp(
+          planetColor, 0.1
+        );
+      }
     }
-    // Fade in label only if hovered
+
+    // Smooth label fade
     setLabelOpacity((prev) => {
-      if (hovered && prev < 1) return Math.min(1, prev + 0.08);
+      if (hovered && prev < 1) return Math.min(1, prev + 0.12);
       if (!hovered && prev > 0) return Math.max(0, prev - 0.08);
       return prev;
     });
@@ -136,6 +178,44 @@ const Planet = ({ position, size, color, data, onClick }: PlanetProps) => {
             depthWrite={false}
           />
         </mesh>
+      )}
+
+      {/* Atmosphere layer */}
+      <mesh ref={atmosphereRef}>
+        <sphereGeometry args={[size * 1.05, 32, 32]} />
+        <meshPhongMaterial
+          color={planetColor}
+          transparent
+          opacity={0.3}
+          side={THREE.BackSide}
+        />
+      </mesh>
+
+      {/* Particle field around planet */}
+      {hovered && (
+        <group>
+          {[...Array(12)].map((_, i) => {
+            const angle = (i / 12) * Math.PI * 2;
+            const radius = size * 1.3;
+            return (
+              <mesh
+                key={i}
+                position={[
+                  Math.cos(angle) * radius,
+                  Math.sin(angle * 0.5) * 0.3,
+                  Math.sin(angle) * radius
+                ]}
+              >
+                <sphereGeometry args={[0.02, 8, 8]} />
+                <meshBasicMaterial
+                  color={planetColor}
+                  transparent
+                  opacity={0.8}
+                />
+              </mesh>
+            );
+          })}
+        </group>
       )}
 
       <Text
