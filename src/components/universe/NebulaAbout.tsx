@@ -38,7 +38,7 @@ const NebulaAbout = ({ onNavigate }: NebulaAboutProps) => {
       position: 10
     },
     {
-      year: '2023',
+      year: '2024',
       title: 'Undergraduate Researcher at Georgia Tech',
       description: 'Designed liquid-level capacitive sensors for moth feeding studies, built reusable double-capacitor setups with Arduino integration.',
       type: 'experience',
@@ -54,7 +54,7 @@ const NebulaAbout = ({ onNavigate }: NebulaAboutProps) => {
       position: 40
     },
     {
-      year: '2024',
+      year: '2025',
       title: 'BiasScope - Media Bias Analyzer',
       description: 'Built media bias analyzer using React, FastAPI, and Sonar API for real-time news analysis and multi-source citations.',
       type: 'achievement',
@@ -62,7 +62,7 @@ const NebulaAbout = ({ onNavigate }: NebulaAboutProps) => {
       position: 55
     },
     {
-      year: '2024',
+      year: '2025',
       title: 'PhantomShield - Deepfake Detection',
       description: 'Developed real-time deepfake detection system for Zoom/Teams calls with sub-200ms latency using PyTorch and OpenCV.',
       type: 'achievement',
@@ -70,7 +70,7 @@ const NebulaAbout = ({ onNavigate }: NebulaAboutProps) => {
       position: 70
     },
     {
-      year: '2024',
+      year: '2025',
       title: 'LLM-SDQ Research Project',
       description: 'Implemented per-layer quantization in GPT-2, reducing model size 4x while maintaining 95% accuracy on SQuAD.',
       type: 'achievement',

@@ -74,7 +74,7 @@ const ContactStation = ({ onNavigate }: ContactStationProps) => {
       name: 'Digital Dossier',
       icon: '📄',
       description: 'Access my comprehensive profile archive',
-      link: '/Akhil_Updated.pdf',
+      link: '/akhil nampally resume.pdf',
       color: '#00C4A7',
       active: true
     }
